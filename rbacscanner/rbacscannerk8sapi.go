@@ -7,7 +7,7 @@ import (
 )
 
 type RbacScannerFromK8sAPI struct {
-	k8s *k8sinterface.KubernetesApi
+	K8s *k8sinterface.KubernetesApi
 	// clientSet    *kubernetes.Clientset
 	CustomerGUID string
 	ClusterName  string
@@ -15,7 +15,7 @@ type RbacScannerFromK8sAPI struct {
 
 func NewRbacScannerFromK8sAPI(k8s *k8sinterface.KubernetesApi, customerGUID string, clusterName string) *RbacScannerFromK8sAPI {
 	return &RbacScannerFromK8sAPI{
-		k8s:          k8s,
+		K8s:          k8s,
 		CustomerGUID: customerGUID,
 		ClusterName:  clusterName}
 }
@@ -32,22 +32,22 @@ func (rbacScannerFromK8sAPI *RbacScannerFromK8sAPI) GetCustomerGUID() string {
 func (rbacScannerFromK8sAPI *RbacScannerFromK8sAPI) ListResources() (*rbacutils.RbacObjects, error) {
 	// clusterName := rbacScannerFromK8sAPI.GetClusterName()
 	rbacObjects := rbacutils.RbacObjects{}
-	clusterRoles, err := rbacScannerFromK8sAPI.k8s.KubernetesClient.RbacV1().ClusterRoles().List(rbacScannerFromK8sAPI.k8s.Context, metav1.ListOptions{})
+	clusterRoles, err := rbacScannerFromK8sAPI.K8s.KubernetesClient.RbacV1().ClusterRoles().List(rbacScannerFromK8sAPI.K8s.Context, metav1.ListOptions{})
 	if err != nil {
 		return nil, err
 	}
 	rbacObjects.ClusterRoles = clusterRoles
-	roles, err := rbacScannerFromK8sAPI.k8s.KubernetesClient.RbacV1().Roles("").List(rbacScannerFromK8sAPI.k8s.Context, metav1.ListOptions{})
+	roles, err := rbacScannerFromK8sAPI.K8s.KubernetesClient.RbacV1().Roles("").List(rbacScannerFromK8sAPI.K8s.Context, metav1.ListOptions{})
 	if err != nil {
 		return nil, err
 	}
 	rbacObjects.Roles = roles
-	clusterRoleBindings, err := rbacScannerFromK8sAPI.k8s.KubernetesClient.RbacV1().ClusterRoleBindings().List(rbacScannerFromK8sAPI.k8s.Context, metav1.ListOptions{})
+	clusterRoleBindings, err := rbacScannerFromK8sAPI.K8s.KubernetesClient.RbacV1().ClusterRoleBindings().List(rbacScannerFromK8sAPI.K8s.Context, metav1.ListOptions{})
 	if err != nil {
 		return nil, err
 	}
 	rbacObjects.ClusterRoleBindings = clusterRoleBindings
-	roleBindings, err := rbacScannerFromK8sAPI.k8s.KubernetesClient.RbacV1().RoleBindings("").List(rbacScannerFromK8sAPI.k8s.Context, metav1.ListOptions{})
+	roleBindings, err := rbacScannerFromK8sAPI.K8s.KubernetesClient.RbacV1().RoleBindings("").List(rbacScannerFromK8sAPI.K8s.Context, metav1.ListOptions{})
 	if err != nil {
 		return nil, err
 	}
