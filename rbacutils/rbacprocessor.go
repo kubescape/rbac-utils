@@ -21,9 +21,9 @@ var ResourceGroupMapping = map[string]string{
 // ============================= SA 2 WLID map ===================================================
 // create service account to WLID map
 
-func InitSA2WLIDmap(clusterName string) (map[string][]string, error) {
+func InitSA2WLIDmap(k8sAPI *k8sinterface.KubernetesApi, clusterName string) (map[string][]string, error) {
 	sa2WLIDmap := make(map[string][]string)
-	allworkloads, err := ListAllWorkloads()
+	allworkloads, err := ListAllWorkloads(k8sAPI)
 	if err != nil {
 		return sa2WLIDmap, nil
 	}
@@ -39,8 +39,7 @@ func InitSA2WLIDmap(clusterName string) (map[string][]string, error) {
 	return sa2WLIDmap, nil
 }
 
-func ListAllWorkloads() ([]k8sinterface.IWorkload, error) {
-	k8sAPI := k8sinterface.NewKubernetesApi()
+func ListAllWorkloads(k8sAPI *k8sinterface.KubernetesApi) ([]k8sinterface.IWorkload, error) {
 	workloads := []k8sinterface.IWorkload{}
 	var errs error
 	for resource := range ResourceGroupMapping {
