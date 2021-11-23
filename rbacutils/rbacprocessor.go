@@ -1,71 +1,68 @@
 package rbacutils
 
 import (
-	"encoding/json"
+	"fmt"
 	"time"
 
+	"github.com/armosec/k8s-interface/k8sinterface"
 	rbac "k8s.io/api/rbac/v1"
 )
 
-type RbacObjects struct {
-	ClusterRoles        *rbac.ClusterRoleList
-	Roles               *rbac.RoleList
-	ClusterRoleBindings *rbac.ClusterRoleBindingList
-	RoleBindings        *rbac.RoleBindingList
-	Rbac                *RBAC
-	RbacT               *[]RbacTable
+var ResourceGroupMapping = map[string]string{
+	"pods":         "/v1",
+	"daemonsets":   "apps/v1",
+	"deployments":  "apps/v1",
+	"replicasets":  "apps/v1",
+	"statefulsets": "apps/v1",
+	"jobs":         "batch/v1",
+	"cronjobs":     "batch/v1beta1",
 }
 
-func (rbacObj RbacObjects) MarshalJSON() ([]byte, error) {
-	j, err := json.Marshal(struct {
-		ClusterRoles        *rbac.ClusterRoleList        `json:",inline"`
-		Roles               *rbac.RoleList               `json:",inline"`
-		ClusterRoleBindings *rbac.ClusterRoleBindingList `json:",inline"`
-		RoleBindings        *rbac.RoleBindingList        `json:",inline"`
-		Rbac                *RBAC                        `json:",inline"`
-		RbacT               *[]RbacTable                 `json:",inline"`
-	}{
-		ClusterRoles:        rbacObj.ClusterRoles,
-		Roles:               rbacObj.Roles,
-		ClusterRoleBindings: rbacObj.ClusterRoleBindings,
-		RoleBindings:        rbacObj.RoleBindings,
-		Rbac:                rbacObj.Rbac,
-		RbacT:               rbacObj.RbacT,
-	})
+// ============================= SA 2 WLID map ===================================================
+// create service account to WLID map
+
+func InitSA2WLIDmap(clusterName string) (map[string][]string, error) {
+	sa2WLIDmap := make(map[string][]string)
+	allworkloads, err := ListAllWorkloads()
 	if err != nil {
-		return nil, err
+		return sa2WLIDmap, nil
 	}
-	return j, nil
+	for _, wl := range allworkloads {
+		serviceAccountName := wl.GetServiceAccountName()
+		if wlidsList, ok := sa2WLIDmap[serviceAccountName]; ok {
+			wlidsList = append(wlidsList, wl.GenerateWlid(clusterName))
+			sa2WLIDmap[serviceAccountName] = wlidsList
+		} else {
+			sa2WLIDmap[serviceAccountName] = []string{wl.GenerateWlid(clusterName)}
+		}
+	}
+	return sa2WLIDmap, nil
+}
+
+func ListAllWorkloads() ([]k8sinterface.IWorkload, error) {
+	k8sAPI := k8sinterface.NewKubernetesApi()
+	workloads := []k8sinterface.IWorkload{}
+	var errs error
+	for resource := range ResourceGroupMapping {
+		groupVersionResource, err := k8sinterface.GetGroupVersionResource(resource)
+		if err != nil {
+			errs = fmt.Errorf("%v\n%s", errs, err.Error())
+			continue
+		}
+		w, err := k8sAPI.ListWorkloads(&groupVersionResource, "", nil, nil)
+		if err != nil {
+			errs = fmt.Errorf("%v\n%s", errs, err.Error())
+			continue
+		}
+		if len(w) == 0 {
+			continue
+		}
+		workloads = append(workloads, w...)
+	}
+	return workloads, errs
 }
 
 // ================================== rbac struct ======================================
-
-//Rule -
-type Rule struct {
-	Rule     rbac.PolicyRule
-	LastUsed string
-}
-
-//Role -
-type Role struct {
-	Name  string
-	Rules []Rule
-}
-
-//Subject - user/group/
-type Subject struct {
-	rbac.Subject
-	Roles []Role
-}
-
-//RBAC -
-type RBAC struct {
-	Kind          string
-	Cluster       string
-	GeneratedDate string
-	GeneratedTime string
-	Subjects      []Subject
-}
 
 // InitRbac -
 func InitRbac(clusterName string, clusterRoles *rbac.ClusterRoleList, roles *rbac.RoleList, clusterRoleBindings *rbac.ClusterRoleBindingList, roleBindings *rbac.RoleBindingList) *RBAC {
@@ -164,16 +161,6 @@ func ExistsSubject(list []Subject, subjectName string) (int, bool) {
 }
 
 //  =========================== rbac table ======================
-//RbacTable -
-type RbacTable struct {
-	Cluster   string
-	Namespace string
-	UserType  string
-	Username  string
-	Role      string
-	Verb      []string
-	Resource  []string
-}
 
 //InitRbacTable -
 func InitRbacTable(clustername string, clusterRoles *rbac.ClusterRoleList, roles *rbac.RoleList, clusterRoleBindings *rbac.ClusterRoleBindingList, roleBindings *rbac.RoleBindingList) *[]RbacTable {
