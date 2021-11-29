@@ -3,7 +3,7 @@ module github.com/armosec/rbac-utils
 go 1.17
 
 require (
-	github.com/armosec/k8s-interface v0.0.13
+	github.com/armosec/k8s-interface v0.0.19
 	github.com/aws/aws-sdk-go v1.41.11
 	github.com/gofrs/uuid v4.1.0+incompatible
 	k8s.io/api v0.22.2
@@ -40,7 +40,7 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
-	github.com/opencontainers/image-spec v1.0.1 // indirect
+	github.com/opencontainers/image-spec v1.0.2 // indirect
 	github.com/pquerna/cachecontrol v0.1.0 // indirect
 	github.com/satori/go.uuid v1.2.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect

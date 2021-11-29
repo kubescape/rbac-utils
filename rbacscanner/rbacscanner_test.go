@@ -2,6 +2,8 @@ package rbacscanner
 
 import (
 	"testing"
+	// "github.com/armosec/k8s-interface/k8sinterface"
+	// "github.com/armosec/rbac-utils/rbacutils"
 )
 
 // func TestListResources(t *testing.T) {
@@ -30,6 +32,27 @@ import (
 // 	}
 // 	if rbacobj.SA2WLIDmap == nil {
 // 		t.Errorf("error creating SA2WLIDmap")
+// 	}
+// 	m1, err := rbacutils.RbacObjectIMetadataWrapper(rbacobj.Rbac)
+// 	if err != nil {
+// 		t.Errorf("error wrapping Rbac")
+// 	}
+// 	if m1.GetName() != "RBAC" {
+// 		t.Errorf("error wrapping Rbac")
+// 	}
+// 	m2, err := rbacutils.RbacTableObjectIMetadataWrapper(rbacobj.RbacT)
+// 	if err != nil {
+// 		t.Errorf("error wrapping RbacT")
+// 	}
+// 	if m2.GetName() != "RbacTable" {
+// 		t.Errorf("error wrapping RbacT")
+// 	}
+// 	m3, err := rbacutils.SA2WLIDmapIMetadataWrapper(rbacobj.SA2WLIDmap)
+// 	if err != nil {
+// 		t.Errorf("error wrapping SA2WLIDmap")
+// 	}
+// 	if m3.GetName() != "SA2WLIDmap" {
+// 		t.Errorf("error wrapping SA2WLIDmap")
 // 	}
 // }
 
