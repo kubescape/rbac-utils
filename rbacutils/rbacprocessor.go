@@ -22,10 +22,23 @@ var ResourceGroupMapping = map[string]string{
 // create service account to WLID map
 
 func InitSA2WLIDmap(k8sAPI *k8sinterface.KubernetesApi, clusterName string) (map[string][]string, error) {
+	groupVersionResource, err := k8sinterface.GetGroupVersionResource("serviceaccounts")
+	if err != nil {
+		return nil, err
+	}
+	serviceaccounts, err := k8sAPI.ListWorkloads(&groupVersionResource, "", nil, nil)
+	if err != nil {
+		return nil, err
+	}
 	sa2WLIDmap := make(map[string][]string)
+	for saIdx := range serviceaccounts {
+		if serviceaccounts[saIdx].GetKind() == "ServiceAccount" {
+			sa2WLIDmap[serviceaccounts[saIdx].GetName()] = make([]string, 0)
+		}
+	}
 	allworkloads, err := ListAllWorkloads(k8sAPI)
 	if err != nil {
-		return sa2WLIDmap, nil
+		return sa2WLIDmap, err
 	}
 	for _, wl := range allworkloads {
 		serviceAccountName := wl.GetServiceAccountName()
