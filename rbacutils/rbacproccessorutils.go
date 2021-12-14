@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/armosec/k8s-interface/workloadinterface"
+	"github.com/armosec/opa-utils/objectsenvelopes"
 )
 
 // =========================== convert rbac objects to IMetadata ============================
@@ -16,8 +17,8 @@ func RbacObjectIMetadataWrapper(rbacObj *RBAC) (workloadinterface.IMetadata, err
 	}
 	m["name"] = "RBAC"
 	m["kind"] = "RBAC"
-	m[workloadinterface.RelatedObjectsKey] = rbacObj.Subjects
-	wrappedRbac := workloadinterface.NewObject(m)
+	m[objectsenvelopes.RelatedObjectsKey] = rbacObj.Subjects
+	wrappedRbac := objectsenvelopes.NewObject(m)
 	return wrappedRbac, nil
 }
 
@@ -29,8 +30,8 @@ func RbacTableObjectIMetadataWrapper(rbacTObj *[]RbacTable) (workloadinterface.I
 	}
 	RbacTableMap["name"] = "RbacTable"
 	RbacTableMap["kind"] = "RbacTable"
-	RbacTableMap[workloadinterface.RelatedObjectsKey] = []workloadinterface.IMetadata{}
-	wrappedRbacT := workloadinterface.NewObject(RbacTableMap)
+	RbacTableMap[objectsenvelopes.RelatedObjectsKey] = []workloadinterface.IMetadata{}
+	wrappedRbacT := objectsenvelopes.NewObject(RbacTableMap)
 	return wrappedRbacT, nil
 }
 
@@ -41,8 +42,8 @@ func SA2WLIDmapIMetadataWrapper(RbacObj map[string][]string) (workloadinterface.
 	}
 	m["name"] = "SA2WLIDmap"
 	m["kind"] = "SA2WLIDmap"
-	m[workloadinterface.RelatedObjectsKey] = []workloadinterface.IMetadata{}
-	wrappedSA2WLIDmap := workloadinterface.NewObject(m)
+	m[objectsenvelopes.RelatedObjectsKey] = []workloadinterface.IMetadata{}
+	wrappedSA2WLIDmap := objectsenvelopes.NewObject(m)
 	return wrappedSA2WLIDmap, nil
 }
 
