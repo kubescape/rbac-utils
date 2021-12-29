@@ -76,6 +76,7 @@ func ListAllWorkloads(k8sAPI *k8sinterface.KubernetesApi) ([]k8sinterface.IWorkl
 
 // ================================== rbac struct ======================================
 
+// DEPRECATED
 // InitRbac -
 func InitRbac(clusterName string, clusterRoles *rbac.ClusterRoleList, roles *rbac.RoleList, clusterRoleBindings *rbac.ClusterRoleBindingList, roleBindings *rbac.RoleBindingList) *RBAC {
 	currentTime := time.Now()
@@ -174,6 +175,7 @@ func ExistsSubject(list []Subject, subjectName string) (int, bool) {
 
 //  =========================== rbac table ======================
 
+// DEPRECATED
 //InitRbacTable -
 func InitRbacTable(clustername string, clusterRoles *rbac.ClusterRoleList, roles *rbac.RoleList, clusterRoleBindings *rbac.ClusterRoleBindingList, roleBindings *rbac.RoleBindingList) *[]RbacTable {
 	var RbacTableList = []RbacTable{}

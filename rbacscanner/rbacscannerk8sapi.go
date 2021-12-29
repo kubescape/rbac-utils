@@ -52,10 +52,10 @@ func (rbacScannerFromK8sAPI *RbacScannerFromK8sAPI) ListResources() (*rbacutils.
 		return nil, err
 	}
 	rbacObjects.RoleBindings = roleBindings
-	myRBAC := rbacutils.InitRbac(rbacScannerFromK8sAPI.ClusterName, clusterRoles, roles, clusterRoleBindings, roleBindings)
-	rbacObjects.Rbac = myRBAC
-	rbactable := rbacutils.InitRbacTable(rbacScannerFromK8sAPI.ClusterName, clusterRoles, roles, clusterRoleBindings, roleBindings)
-	rbacObjects.RbacT = rbactable
+	// myRBAC := rbacutils.InitRbac(rbacScannerFromK8sAPI.ClusterName, clusterRoles, roles, clusterRoleBindings, roleBindings)
+	// rbacObjects.Rbac = myRBAC
+	// rbactable := rbacutils.InitRbacTable(rbacScannerFromK8sAPI.ClusterName, clusterRoles, roles, clusterRoleBindings, roleBindings)
+	// rbacObjects.RbacT = rbactable
 	sa2WLIDmap, err := rbacutils.InitSA2WLIDmap(rbacScannerFromK8sAPI.K8s, rbacScannerFromK8sAPI.ClusterName)
 	if err != nil {
 		return nil, err

@@ -11,8 +11,8 @@ type RbacObjects struct {
 	Roles               *rbac.RoleList
 	ClusterRoleBindings *rbac.ClusterRoleBindingList
 	RoleBindings        *rbac.RoleBindingList
-	Rbac                *RBAC
-	RbacT               *[]RbacTable
+	Rbac                *RBAC        // DEPRECATED
+	RbacT               *[]RbacTable // DEPRECATED
 	SA2WLIDmap          map[string][]string
 }
 
@@ -56,6 +56,7 @@ type Subject struct {
 	Roles []Role
 }
 
+// DEPRECATED
 //RBAC -
 type RBAC struct {
 	Kind          string
@@ -65,6 +66,7 @@ type RBAC struct {
 	Subjects      []Subject
 }
 
+// DEPRECATED
 //RbacTable -
 type RbacTable struct {
 	Cluster   string

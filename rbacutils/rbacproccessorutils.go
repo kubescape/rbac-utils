@@ -10,6 +10,7 @@ import (
 
 // =========================== convert rbac objects to IMetadata ============================
 
+// DEPRECATED
 func RbacObjectIMetadataWrapper(rbacObj *RBAC) (workloadinterface.IMetadata, error) {
 	m, err := convertToMap(rbacObj)
 	if err != nil {
@@ -22,6 +23,7 @@ func RbacObjectIMetadataWrapper(rbacObj *RBAC) (workloadinterface.IMetadata, err
 	return wrappedRbac, nil
 }
 
+// DEPRECATED
 func RbacTableObjectIMetadataWrapper(rbacTObj *[]RbacTable) (workloadinterface.IMetadata, error) {
 	RbacTableMap := map[string]interface{}{}
 	r := *rbacTObj
