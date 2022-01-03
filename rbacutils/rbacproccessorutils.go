@@ -37,6 +37,7 @@ func RbacTableObjectIMetadataWrapper(rbacTObj *[]RbacTable) (workloadinterface.I
 	return wrappedRbacT, nil
 }
 
+//TODO- DEPRECATE sa2WLIDmap
 func SA2WLIDmapIMetadataWrapper(RbacObj map[string][]string) (workloadinterface.IMetadata, error) {
 	m, err := convertToMap(RbacObj)
 	if err != nil {
@@ -47,6 +48,18 @@ func SA2WLIDmapIMetadataWrapper(RbacObj map[string][]string) (workloadinterface.
 	m[objectsenvelopes.RelatedObjectsKey] = []workloadinterface.IMetadata{}
 	wrappedSA2WLIDmap := objectsenvelopes.NewObject(m)
 	return wrappedSA2WLIDmap, nil
+}
+
+func SAID2WLIDmapIMetadataWrapper(RbacObj map[string][]string) (workloadinterface.IMetadata, error) {
+	m, err := convertToMap(RbacObj)
+	if err != nil {
+		return nil, err
+	}
+	m["name"] = "SAID2WLIDmap"
+	m["kind"] = "SAID2WLIDmap"
+	m[objectsenvelopes.RelatedObjectsKey] = []workloadinterface.IMetadata{}
+	wrappedSAID2WLIDmap := objectsenvelopes.NewObject(m)
+	return wrappedSAID2WLIDmap, nil
 }
 
 func convertToMap(obj interface{}) (map[string]interface{}, error) {

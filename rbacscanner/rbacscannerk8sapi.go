@@ -52,14 +52,16 @@ func (rbacScannerFromK8sAPI *RbacScannerFromK8sAPI) ListResources() (*rbacutils.
 		return nil, err
 	}
 	rbacObjects.RoleBindings = roleBindings
-	// myRBAC := rbacutils.InitRbac(rbacScannerFromK8sAPI.ClusterName, clusterRoles, roles, clusterRoleBindings, roleBindings)
-	// rbacObjects.Rbac = myRBAC
-	// rbactable := rbacutils.InitRbacTable(rbacScannerFromK8sAPI.ClusterName, clusterRoles, roles, clusterRoleBindings, roleBindings)
-	// rbacObjects.RbacT = rbactable
+	//TODO - DEPRECATE sa2WLIDmap
 	sa2WLIDmap, err := rbacutils.InitSA2WLIDmap(rbacScannerFromK8sAPI.K8s, rbacScannerFromK8sAPI.ClusterName)
 	if err != nil {
 		return nil, err
 	}
 	rbacObjects.SA2WLIDmap = sa2WLIDmap
+	saID2WLIDmap, err := rbacutils.InitSAID2WLIDmap(rbacScannerFromK8sAPI.K8s, rbacScannerFromK8sAPI.ClusterName)
+	if err != nil {
+		return nil, err
+	}
+	rbacObjects.SAID2WLIDmap = saID2WLIDmap
 	return &rbacObjects, nil
 }

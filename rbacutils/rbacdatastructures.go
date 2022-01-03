@@ -11,9 +11,10 @@ type RbacObjects struct {
 	Roles               *rbac.RoleList
 	ClusterRoleBindings *rbac.ClusterRoleBindingList
 	RoleBindings        *rbac.RoleBindingList
-	Rbac                *RBAC        // DEPRECATED
-	RbacT               *[]RbacTable // DEPRECATED
-	SA2WLIDmap          map[string][]string
+	Rbac                *RBAC               // DEPRECATED
+	RbacT               *[]RbacTable        // DEPRECATED
+	SA2WLIDmap          map[string][]string //TODO- DEPRECATE sa2WLIDmap
+	SAID2WLIDmap        map[string][]string
 }
 
 func (rbacObj RbacObjects) MarshalJSON() ([]byte, error) {

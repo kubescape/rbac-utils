@@ -8,19 +8,77 @@ import (
 	rbac "k8s.io/api/rbac/v1"
 )
 
-var ResourceGroupMapping = map[string]string{
-	"pods":         "/v1",
-	"daemonsets":   "apps/v1",
-	"deployments":  "apps/v1",
-	"replicasets":  "apps/v1",
-	"statefulsets": "apps/v1",
-	"jobs":         "batch/v1",
-	"cronjobs":     "batch/v1beta1",
-}
+var (
+	ResourceGroupMapping = map[string]string{
+		"pods":         "/v1",
+		"daemonsets":   "apps/v1",
+		"deployments":  "apps/v1",
+		"replicasets":  "apps/v1",
+		"statefulsets": "apps/v1",
+		"jobs":         "batch/v1",
+		"cronjobs":     "batch/v1beta1",
+	}
+	serviceaccountkind    = "ServiceAccount"
+	serviceaccountversion = "v1"
+)
 
 // ============================= SA 2 WLID map ===================================================
-// create service account to WLID map
 
+func ListAllWorkloads(k8sAPI *k8sinterface.KubernetesApi) ([]k8sinterface.IWorkload, error) {
+	workloads := []k8sinterface.IWorkload{}
+	var errs error
+	for resource := range ResourceGroupMapping {
+		groupVersionResource, err := k8sinterface.GetGroupVersionResource(resource)
+		if err != nil {
+			errs = fmt.Errorf("%v\n%s", errs, err.Error())
+			continue
+		}
+		w, err := k8sAPI.ListWorkloads(&groupVersionResource, "", nil, nil)
+		if err != nil {
+			errs = fmt.Errorf("%v\n%s", errs, err.Error())
+			continue
+		}
+		if len(w) == 0 {
+			continue
+		}
+		workloads = append(workloads, w...)
+	}
+	return workloads, errs
+}
+
+func InitSAID2WLIDmap(k8sAPI *k8sinterface.KubernetesApi, clusterName string) (map[string][]string, error) {
+	groupVersionResource, err := k8sinterface.GetGroupVersionResource("serviceaccounts")
+	if err != nil {
+		return nil, err
+	}
+	serviceaccounts, err := k8sAPI.ListWorkloads(&groupVersionResource, "", nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	saID2WLIDmap := make(map[string][]string)
+	for saIdx := range serviceaccounts {
+		if serviceaccounts[saIdx].GetKind() == "ServiceAccount" {
+			saID2WLIDmap[serviceaccounts[saIdx].GetID()] = make([]string, 0)
+		}
+	}
+	allworkloads, err := ListAllWorkloads(k8sAPI)
+	if err != nil {
+		return saID2WLIDmap, err
+	}
+	for _, wl := range allworkloads {
+		saID := fmt.Sprintf("/%s/%s/%s/%s", serviceaccountversion, wl.GetNamespace(), serviceaccountkind, wl.GetServiceAccountName())
+		if wlidsList, ok := saID2WLIDmap[saID]; ok {
+			wlidsList = append(wlidsList, wl.GenerateWlid(clusterName))
+			saID2WLIDmap[saID] = wlidsList
+		} else {
+			saID2WLIDmap[saID] = []string{wl.GenerateWlid(clusterName)}
+		}
+	}
+	return saID2WLIDmap, nil
+}
+
+//TODO - DEPRECATE sa2WLIDmap
+// create service account to WLID map
 func InitSA2WLIDmap(k8sAPI *k8sinterface.KubernetesApi, clusterName string) (map[string][]string, error) {
 	groupVersionResource, err := k8sinterface.GetGroupVersionResource("serviceaccounts")
 	if err != nil {
@@ -50,28 +108,6 @@ func InitSA2WLIDmap(k8sAPI *k8sinterface.KubernetesApi, clusterName string) (map
 		}
 	}
 	return sa2WLIDmap, nil
-}
-
-func ListAllWorkloads(k8sAPI *k8sinterface.KubernetesApi) ([]k8sinterface.IWorkload, error) {
-	workloads := []k8sinterface.IWorkload{}
-	var errs error
-	for resource := range ResourceGroupMapping {
-		groupVersionResource, err := k8sinterface.GetGroupVersionResource(resource)
-		if err != nil {
-			errs = fmt.Errorf("%v\n%s", errs, err.Error())
-			continue
-		}
-		w, err := k8sAPI.ListWorkloads(&groupVersionResource, "", nil, nil)
-		if err != nil {
-			errs = fmt.Errorf("%v\n%s", errs, err.Error())
-			continue
-		}
-		if len(w) == 0 {
-			continue
-		}
-		workloads = append(workloads, w...)
-	}
-	return workloads, errs
 }
 
 // ================================== rbac struct ======================================
