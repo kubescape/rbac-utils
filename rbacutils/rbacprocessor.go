@@ -101,12 +101,14 @@ func InitSA2WLIDmap(k8sAPI *k8sinterface.KubernetesApi, clusterName string) (map
 		return sa2WLIDmap, err
 	}
 	for _, wl := range allworkloads {
-		serviceAccountName := wl.GetServiceAccountName()
-		if wlidsList, ok := sa2WLIDmap[serviceAccountName]; ok {
-			wlidsList = append(wlidsList, wl.GenerateWlid(clusterName))
-			sa2WLIDmap[serviceAccountName] = wlidsList
-		} else {
-			sa2WLIDmap[serviceAccountName] = []string{wl.GenerateWlid(clusterName)}
+		if ref, err := wl.GetOwnerReferences(); len(ref) == 0 && err == nil {
+			serviceAccountName := wl.GetServiceAccountName()
+			if wlidsList, ok := sa2WLIDmap[serviceAccountName]; ok {
+				wlidsList = append(wlidsList, wl.GenerateWlid(clusterName))
+				sa2WLIDmap[serviceAccountName] = wlidsList
+			} else {
+				sa2WLIDmap[serviceAccountName] = []string{wl.GenerateWlid(clusterName)}
+			}
 		}
 	}
 	return sa2WLIDmap, nil
