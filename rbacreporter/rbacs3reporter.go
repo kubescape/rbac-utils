@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"log"
 
-	rbacutils "github.com/armosec/rbac-utils/rbacutils"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	rbacutils "github.com/kubescape/rbac-utils/rbacutils"
 	rbac "k8s.io/api/rbac/v1"
 )
 

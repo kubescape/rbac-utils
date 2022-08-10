@@ -2,7 +2,7 @@ package rbacscanner
 
 import (
 	"github.com/armosec/k8s-interface/k8sinterface"
-	rbacutils "github.com/armosec/rbac-utils/rbacutils"
+	rbacutils "github.com/kubescape/rbac-utils/rbacutils"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 

@@ -1,6 +1,6 @@
 package rbacreporter
 
-import rbacutils "github.com/armosec/rbac-utils/rbacutils"
+import rbacutils "github.com/kubescape/rbac-utils/rbacutils"
 
 type IRbacReporter interface {
 	ReportRbac(rbacObj *rbacutils.RbacObjects) error

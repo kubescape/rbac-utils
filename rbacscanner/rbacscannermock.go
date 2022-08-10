@@ -1,7 +1,7 @@
 package rbacscanner
 
 import (
-	rbacutils "github.com/armosec/rbac-utils/rbacutils"
+	rbacutils "github.com/kubescape/rbac-utils/rbacutils"
 )
 
 type RbacScannerMock struct {

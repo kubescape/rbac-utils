@@ -8,8 +8,8 @@ import (
 	"net/url"
 	"strings"
 
-	rbacutils "github.com/armosec/rbac-utils/rbacutils"
 	"github.com/gofrs/uuid"
+	rbacutils "github.com/kubescape/rbac-utils/rbacutils"
 )
 
 type EventReceiverRBACReporter struct {

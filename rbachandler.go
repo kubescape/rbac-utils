@@ -1,8 +1,8 @@
 package rbachandler
 
 import (
-	"github.com/armosec/rbac-utils/rbacreporter"
-	"github.com/armosec/rbac-utils/rbacscanner"
+	"github.com/kubescape/rbac-utils/rbacreporter"
+	"github.com/kubescape/rbac-utils/rbacscanner"
 )
 
 func HandleRBAC(rScanner rbacscanner.IRbacScanner, rReporter rbacreporter.IRbacReporter) error {
