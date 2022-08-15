@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/armosec/k8s-interface/k8sinterface"
+	"github.com/kubescape/k8s-interface/k8sinterface"
 	rbac "k8s.io/api/rbac/v1"
 )
 

@@ -4,17 +4,19 @@ import (
 	"encoding/json"
 	"strconv"
 
-	"github.com/armosec/k8s-interface/k8sinterface"
-	"github.com/armosec/k8s-interface/workloadinterface"
-	"github.com/kubescape/opa-utils/objectsenvelopes"
+	"github.com/kubescape/k8s-interface/k8sinterface"
+	"github.com/kubescape/k8s-interface/workloadinterface"
 )
 
 // =========================== convert rbac objects to IMetadata ============================
 
-const ArmoRBACGroup = "armo.rbac.com"
+const (
+	ArmoRBACGroup       = "armo.rbac.com"
+	relatedObjectsField = "relatedObjects"
+)
 
 // DEPRECATED
-func RbacObjectIMetadataWrapper(rbacObj *RBAC) (workloadinterface.IMetadata, error) {
+func RbacObjectIMetadataWrapper(rbacObj *RBAC) (map[string]interface{}, error) {
 	m, err := convertToMap(rbacObj)
 	if err != nil {
 		return nil, err
@@ -23,13 +25,12 @@ func RbacObjectIMetadataWrapper(rbacObj *RBAC) (workloadinterface.IMetadata, err
 	m["kind"] = "RBAC"
 	m["apiVersion"] = k8sinterface.JoinGroupVersion(ArmoRBACGroup, "v0beta1")
 
-	m[objectsenvelopes.RelatedObjectsKey] = rbacObj.Subjects
-	wrappedRbac := objectsenvelopes.NewObject(m)
-	return wrappedRbac, nil
+	m[relatedObjectsField] = rbacObj.Subjects
+	return m, nil
 }
 
 // DEPRECATED
-func RbacTableObjectIMetadataWrapper(rbacTObj *[]RbacTable) (workloadinterface.IMetadata, error) {
+func RbacTableObjectIMetadataWrapper(rbacTObj *[]RbacTable) (map[string]interface{}, error) {
 	rbacTableMap := map[string]interface{}{}
 	r := *rbacTObj
 	for i := range r {
@@ -39,13 +40,12 @@ func RbacTableObjectIMetadataWrapper(rbacTObj *[]RbacTable) (workloadinterface.I
 	rbacTableMap["kind"] = "RbacTable"
 	rbacTableMap["apiVersion"] = k8sinterface.JoinGroupVersion(ArmoRBACGroup, "v0beta1")
 
-	rbacTableMap[objectsenvelopes.RelatedObjectsKey] = []workloadinterface.IMetadata{}
-	wrappedRbacT := objectsenvelopes.NewObject(rbacTableMap)
-	return wrappedRbacT, nil
+	rbacTableMap[relatedObjectsField] = []workloadinterface.IMetadata{}
+	return rbacTableMap, nil
 }
 
 //TODO- DEPRECATE sa2WLIDmap
-func SA2WLIDmapIMetadataWrapper(RbacObj map[string][]string) (workloadinterface.IMetadata, error) {
+func SA2WLIDmapIMetadataWrapper(RbacObj map[string][]string) (map[string]interface{}, error) {
 	m, err := convertToMap(RbacObj)
 	if err != nil {
 		return nil, err
@@ -54,12 +54,11 @@ func SA2WLIDmapIMetadataWrapper(RbacObj map[string][]string) (workloadinterface.
 	m["kind"] = "SA2WLIDmap"
 	m["apiVersion"] = k8sinterface.JoinGroupVersion(ArmoRBACGroup, "v0beta1")
 
-	m[objectsenvelopes.RelatedObjectsKey] = []workloadinterface.IMetadata{}
-	wrappedSA2WLIDmap := objectsenvelopes.NewObject(m)
-	return wrappedSA2WLIDmap, nil
+	m[relatedObjectsField] = []workloadinterface.IMetadata{}
+	return m, nil
 }
 
-func SAID2WLIDmapIMetadataWrapper(RbacObj map[string][]string) (workloadinterface.IMetadata, error) {
+func SAID2WLIDmapIMetadataWrapper(RbacObj map[string][]string) (map[string]interface{}, error) {
 	m, err := convertToMap(RbacObj)
 	if err != nil {
 		return nil, err
@@ -68,9 +67,8 @@ func SAID2WLIDmapIMetadataWrapper(RbacObj map[string][]string) (workloadinterfac
 	m["kind"] = "SAID2WLIDmap"
 	m["apiVersion"] = k8sinterface.JoinGroupVersion(ArmoRBACGroup, "v0beta1")
 
-	m[objectsenvelopes.RelatedObjectsKey] = []workloadinterface.IMetadata{}
-	wrappedSAID2WLIDmap := objectsenvelopes.NewObject(m)
-	return wrappedSAID2WLIDmap, nil
+	m[relatedObjectsField] = []workloadinterface.IMetadata{}
+	return m, nil
 }
 
 func convertToMap(obj interface{}) (map[string]interface{}, error) {
