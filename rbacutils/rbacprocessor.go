@@ -9,15 +9,16 @@ import (
 )
 
 var (
-	ResourceGroupMapping = map[string]string{
-		"pods":         "/v1",
-		"daemonsets":   "apps/v1",
-		"deployments":  "apps/v1",
-		"replicasets":  "apps/v1",
-		"statefulsets": "apps/v1",
-		"jobs":         "batch/v1",
-		"cronjobs":     "batch/v1beta1",
+	ResourceGroupMapping = []string{
+		"pods",
+		"daemonsets",
+		"deployments",
+		"replicasets",
+		"statefulsets",
+		"jobs",
+		"cronjobs",
 	}
+
 	serviceaccountkind    = "ServiceAccount"
 	serviceaccountversion = "v1"
 )
@@ -27,8 +28,8 @@ var (
 func ListAllWorkloads(k8sAPI *k8sinterface.KubernetesApi) ([]k8sinterface.IWorkload, error) {
 	workloads := []k8sinterface.IWorkload{}
 	var errs error
-	for resource := range ResourceGroupMapping {
-		groupVersionResource, err := k8sinterface.GetGroupVersionResource(resource)
+	for i := range ResourceGroupMapping {
+		groupVersionResource, err := k8sinterface.GetGroupVersionResource(ResourceGroupMapping[i])
 		if err != nil {
 			errs = fmt.Errorf("%v\n%s", errs, err.Error())
 			continue
