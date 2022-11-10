@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/kubescape/go-logger"
 	"github.com/kubescape/k8s-interface/k8sinterface"
 	rbac "k8s.io/api/rbac/v1"
 )
@@ -64,7 +65,8 @@ func InitSAID2WLIDmap(k8sAPI *k8sinterface.KubernetesApi, clusterName string) (m
 	}
 	allworkloads, err := ListAllWorkloads(k8sAPI)
 	if err != nil {
-		return saID2WLIDmap, err
+		logger.L().Warning(err.Error())
+		return saID2WLIDmap, nil
 	}
 	for _, wl := range allworkloads {
 		if ref, err := wl.GetOwnerReferences(); len(ref) == 0 && err == nil {
@@ -99,7 +101,8 @@ func InitSA2WLIDmap(k8sAPI *k8sinterface.KubernetesApi, clusterName string) (map
 	}
 	allworkloads, err := ListAllWorkloads(k8sAPI)
 	if err != nil {
-		return sa2WLIDmap, err
+		logger.L().Warning(err.Error())
+		return sa2WLIDmap, nil
 	}
 	for _, wl := range allworkloads {
 		if ref, err := wl.GetOwnerReferences(); len(ref) == 0 && err == nil {
