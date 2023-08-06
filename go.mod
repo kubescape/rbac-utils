@@ -6,6 +6,7 @@ require (
 	github.com/aws/aws-sdk-go v1.44.51
 	github.com/gofrs/uuid v4.1.0+incompatible
 	github.com/kubescape/k8s-interface v0.0.89
+	golang.org/x/exp v0.0.0-20230801115018-d63ba01acd4b
 	k8s.io/api v0.25.3
 	k8s.io/apimachinery v0.25.3
 )
@@ -65,7 +66,7 @@ require (
 	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e // indirect
 	golang.org/x/net v0.0.0-20220722155237-a158d28d115b // indirect
 	golang.org/x/oauth2 v0.0.0-20220630143837-2104d58473e0 // indirect
-	golang.org/x/sys v0.0.0-20220722155257-8c9f86f7a55f // indirect
+	golang.org/x/sys v0.1.0 // indirect
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20220210224613-90d013bbcef8 // indirect

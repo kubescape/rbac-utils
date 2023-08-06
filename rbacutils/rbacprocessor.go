@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kubescape/go-logger"
 	"github.com/kubescape/k8s-interface/k8sinterface"
+	"golang.org/x/exp/slices"
 	rbac "k8s.io/api/rbac/v1"
 )
 
@@ -65,11 +65,10 @@ func InitSAID2WLIDmap(k8sAPI *k8sinterface.KubernetesApi, clusterName string) (m
 	}
 	allworkloads, err := ListAllWorkloads(k8sAPI)
 	if err != nil {
-		logger.L().Warning(err.Error())
 		return saID2WLIDmap, nil
 	}
 	for _, wl := range allworkloads {
-		if ref, err := wl.GetOwnerReferences(); len(ref) == 0 && err == nil {
+		if !WorkloadHasParent(wl) {
 			saID := fmt.Sprintf("/%s/%s/%s/%s", serviceaccountversion, wl.GetNamespace(), serviceaccountkind, wl.GetServiceAccountName())
 			if wlidsList, ok := saID2WLIDmap[saID]; ok {
 				wlidsList = append(wlidsList, wl.GenerateWlid(clusterName))
@@ -82,7 +81,39 @@ func InitSAID2WLIDmap(k8sAPI *k8sinterface.KubernetesApi, clusterName string) (m
 	return saID2WLIDmap, nil
 }
 
-//TODO - DEPRECATE sa2WLIDmap
+// This function is a duplication from k8sinterface
+// TODO - use k8sinterface.WorkloadHasParent
+func WorkloadHasParent(workload k8sinterface.IWorkload) bool {
+	if workload == nil {
+		return false
+	}
+
+	// filter out non-controller workloads
+	if !slices.Contains([]string{"Pod", "Job", "ReplicaSet"}, workload.GetKind()) {
+		return false
+	}
+
+	// check if workload has owner
+	ownerReferences, err := workload.GetOwnerReferences() // OwnerReferences in workload
+	if err != nil {
+		return false
+	}
+	if len(ownerReferences) > 0 {
+		return slices.Contains([]string{"apps/v1", "batch/v1", "batch/v1beta1"}, ownerReferences[0].APIVersion)
+	}
+
+	// check if workload is Pod with pod-template-hash label
+	if workload.GetKind() == "Pod" {
+		if podLabels := workload.GetLabels(); podLabels != nil {
+			if podHash, ok := podLabels["pod-template-hash"]; ok && podHash != "" {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// TODO - DEPRECATE sa2WLIDmap
 // create service account to WLID map
 func InitSA2WLIDmap(k8sAPI *k8sinterface.KubernetesApi, clusterName string) (map[string][]string, error) {
 	groupVersionResource, err := k8sinterface.GetGroupVersionResource("serviceaccounts")
@@ -101,7 +132,6 @@ func InitSA2WLIDmap(k8sAPI *k8sinterface.KubernetesApi, clusterName string) (map
 	}
 	allworkloads, err := ListAllWorkloads(k8sAPI)
 	if err != nil {
-		logger.L().Warning(err.Error())
 		return sa2WLIDmap, nil
 	}
 	for _, wl := range allworkloads {
@@ -220,7 +250,7 @@ func ExistsSubject(list []Subject, subjectName string) (int, bool) {
 //  =========================== rbac table ======================
 
 // DEPRECATED
-//InitRbacTable -
+// InitRbacTable -
 func InitRbacTable(clustername string, clusterRoles *rbac.ClusterRoleList, roles *rbac.RoleList, clusterRoleBindings *rbac.ClusterRoleBindingList, roleBindings *rbac.RoleBindingList) *[]RbacTable {
 	var RbacTableList = []RbacTable{}
 	for _, clusterRoleBinding := range clusterRoleBindings.Items {
