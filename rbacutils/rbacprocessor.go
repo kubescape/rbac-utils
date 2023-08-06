@@ -69,7 +69,11 @@ func InitSAID2WLIDmap(k8sAPI *k8sinterface.KubernetesApi, clusterName string) (m
 	}
 	for _, wl := range allworkloads {
 		if !WorkloadHasParent(wl) {
-			saID := fmt.Sprintf("/%s/%s/%s/%s", serviceaccountversion, wl.GetNamespace(), serviceaccountkind, wl.GetServiceAccountName())
+			connectedSA := wl.GetServiceAccountName()
+			if connectedSA == "" {
+				connectedSA = "default"
+			}
+			saID := fmt.Sprintf("/%s/%s/%s/%s", serviceaccountversion, wl.GetNamespace(), serviceaccountkind, connectedSA)
 			if wlidsList, ok := saID2WLIDmap[saID]; ok {
 				wlidsList = append(wlidsList, wl.GenerateWlid(clusterName))
 				saID2WLIDmap[saID] = wlidsList
