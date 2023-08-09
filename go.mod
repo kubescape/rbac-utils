@@ -1,12 +1,11 @@
 module github.com/kubescape/rbac-utils
 
-go 1.18
+go 1.20
 
 require (
 	github.com/aws/aws-sdk-go v1.44.312
 	github.com/gofrs/uuid v4.1.0+incompatible
 	github.com/kubescape/k8s-interface v0.0.136
-	golang.org/x/exp v0.0.0-20230801115018-d63ba01acd4b
 	k8s.io/api v0.27.4
 	k8s.io/apimachinery v0.27.4
 )
@@ -80,6 +79,7 @@ require (
 	github.com/pquerna/cachecontrol v0.2.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	golang.org/x/crypto v0.11.0 // indirect
+	golang.org/x/exp v0.0.0-20230801115018-d63ba01acd4b // indirect
 	golang.org/x/net v0.12.0 // indirect
 	golang.org/x/oauth2 v0.10.0 // indirect
 	golang.org/x/sys v0.10.0 // indirect
