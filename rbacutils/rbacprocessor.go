@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/kubescape/k8s-interface/k8sinterface"
-	"golang.org/x/exp/slices"
 	rbac "k8s.io/api/rbac/v1"
 )
 
@@ -68,7 +67,7 @@ func InitSAID2WLIDmap(k8sAPI *k8sinterface.KubernetesApi, clusterName string) (m
 		return saID2WLIDmap, nil
 	}
 	for _, wl := range allworkloads {
-		if !WorkloadHasParent(wl) {
+		if !k8sinterface.WorkloadHasParent(wl) {
 			connectedSA := wl.GetServiceAccountName()
 			if connectedSA == "" {
 				connectedSA = "default"
@@ -83,38 +82,6 @@ func InitSAID2WLIDmap(k8sAPI *k8sinterface.KubernetesApi, clusterName string) (m
 		}
 	}
 	return saID2WLIDmap, nil
-}
-
-// This function is a duplication from k8sinterface
-// TODO - use k8sinterface.WorkloadHasParent
-func WorkloadHasParent(workload k8sinterface.IWorkload) bool {
-	if workload == nil {
-		return false
-	}
-
-	// filter out non-controller workloads
-	if !slices.Contains([]string{"Pod", "Job", "ReplicaSet"}, workload.GetKind()) {
-		return false
-	}
-
-	// check if workload has owner
-	ownerReferences, err := workload.GetOwnerReferences() // OwnerReferences in workload
-	if err != nil {
-		return false
-	}
-	if len(ownerReferences) > 0 {
-		return slices.Contains([]string{"apps/v1", "batch/v1", "batch/v1beta1"}, ownerReferences[0].APIVersion)
-	}
-
-	// check if workload is Pod with pod-template-hash label
-	if workload.GetKind() == "Pod" {
-		if podLabels := workload.GetLabels(); podLabels != nil {
-			if podHash, ok := podLabels["pod-template-hash"]; ok && podHash != "" {
-				return true
-			}
-		}
-	}
-	return false
 }
 
 // TODO - DEPRECATE sa2WLIDmap
