@@ -11,9 +11,6 @@ type RbacObjects struct {
 	Roles               *rbac.RoleList
 	ClusterRoleBindings *rbac.ClusterRoleBindingList
 	RoleBindings        *rbac.RoleBindingList
-	Rbac                *RBAC               // DEPRECATED
-	RbacT               *[]RbacTable        // DEPRECATED
-	SA2WLIDmap          map[string][]string //TODO- DEPRECATE sa2WLIDmap
 	SAID2WLIDmap        map[string][]string
 }
 
@@ -23,15 +20,11 @@ func (rbacObj RbacObjects) MarshalJSON() ([]byte, error) {
 		Roles               *rbac.RoleList               `json:",inline"`
 		ClusterRoleBindings *rbac.ClusterRoleBindingList `json:",inline"`
 		RoleBindings        *rbac.RoleBindingList        `json:",inline"`
-		Rbac                *RBAC                        `json:",inline"`
-		RbacT               *[]RbacTable                 `json:",inline"`
 	}{
 		ClusterRoles:        rbacObj.ClusterRoles,
 		Roles:               rbacObj.Roles,
 		ClusterRoleBindings: rbacObj.ClusterRoleBindings,
 		RoleBindings:        rbacObj.RoleBindings,
-		Rbac:                rbacObj.Rbac,
-		RbacT:               rbacObj.RbacT,
 	})
 	if err != nil {
 		return nil, err
@@ -39,42 +32,20 @@ func (rbacObj RbacObjects) MarshalJSON() ([]byte, error) {
 	return j, nil
 }
 
-//Rule -
+// Rule -
 type Rule struct {
 	Rule     rbac.PolicyRule
 	LastUsed string
 }
 
-//Role -
+// Role -
 type Role struct {
 	Name  string
 	Rules []Rule
 }
 
-//Subject - user/group/
+// Subject - user/group/
 type Subject struct {
 	rbac.Subject
 	Roles []Role
-}
-
-// DEPRECATED
-//RBAC -
-type RBAC struct {
-	Kind          string
-	Cluster       string
-	GeneratedDate string
-	GeneratedTime string
-	Subjects      []Subject
-}
-
-// DEPRECATED
-//RbacTable -
-type RbacTable struct {
-	Cluster   string
-	Namespace string
-	UserType  string
-	Username  string
-	Role      string
-	Verb      []string
-	Resource  []string
 }

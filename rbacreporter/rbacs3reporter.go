@@ -55,16 +55,10 @@ func (s3RBACReporter *S3RBACReporter) ReportRbac(rbacObj *rbacutils.RbacObjects)
 	if err := s3RBACReporter.UploadroleBindings(rbacObj.RoleBindings, s3RBACReporter.GetCustomerGUID(), s3RBACReporter.GetClusterName()); err != nil {
 		return err
 	}
-	if err := s3RBACReporter.UploadRBAC(rbacObj.Rbac, s3RBACReporter.GetCustomerGUID(), s3RBACReporter.GetClusterName()); err != nil {
-		return err
-	}
-	if err := s3RBACReporter.UploadRBACTable(rbacObj.RbacT, s3RBACReporter.GetCustomerGUID(), s3RBACReporter.GetClusterName()); err != nil {
-		return err
-	}
 	return nil
 }
 
-//UploadroleBindings -
+// UploadroleBindings -
 func (s3RBACReporter *S3RBACReporter) UploadroleBindings(roleBindings *rbac.RoleBindingList, customer string, cluster string) error {
 	key := customer + "/" + cluster + "/" + "roleBindings.json"
 	scanDeliveryBucket := s3RBACReporter.S3Bucket
@@ -90,7 +84,7 @@ func (s3RBACReporter *S3RBACReporter) UploadroleBindings(roleBindings *rbac.Role
 	}
 }
 
-//UploadclusterRoleBindings -
+// UploadclusterRoleBindings -
 func (s3RBACReporter *S3RBACReporter) UploadclusterRoleBindings(clusterRoleBindings *rbac.ClusterRoleBindingList, customer string, cluster string) error {
 	key := customer + "/" + cluster + "/" + "clusterRoleBindings.json"
 	scanDeliveryBucket := s3RBACReporter.S3Bucket
@@ -116,7 +110,7 @@ func (s3RBACReporter *S3RBACReporter) UploadclusterRoleBindings(clusterRoleBindi
 	}
 }
 
-//Uploadroles -
+// Uploadroles -
 func (s3RBACReporter *S3RBACReporter) Uploadroles(roles *rbac.RoleList, customer string, cluster string) error {
 	key := customer + "/" + cluster + "/" + "roles.json"
 	scanDeliveryBucket := s3RBACReporter.S3Bucket
@@ -143,7 +137,7 @@ func (s3RBACReporter *S3RBACReporter) Uploadroles(roles *rbac.RoleList, customer
 	}
 }
 
-//Uploadclusterroles -
+// Uploadclusterroles -
 func (s3RBACReporter *S3RBACReporter) Uploadclusterroles(clusterroles *rbac.ClusterRoleList, customer string, cluster string) error {
 	key := customer + "/" + cluster + "/" + "clusterroles.json"
 	scanDeliveryBucket := s3RBACReporter.S3Bucket
@@ -167,52 +161,4 @@ func (s3RBACReporter *S3RBACReporter) Uploadclusterroles(clusterroles *rbac.Clus
 		log.Printf("uploaded %s to bucket %s", key, scanDeliveryBucket)
 		return nil
 	}
-}
-
-//UploadRBAC -
-func (s3RBACReporter *S3RBACReporter) UploadRBAC(MyRBAC *rbacutils.RBAC, customer string, cluster string) error {
-	key := customer + "/" + cluster + "/" + "RBAC.json"
-	scanDeliveryBucket := s3RBACReporter.S3Bucket
-	if len(scanDeliveryBucket) == 0 {
-		return fmt.Errorf("must configure S3_BUCKET")
-	}
-	jsonRaw, _ := json.Marshal(MyRBAC)
-	sess, err := session.NewSession(&aws.Config{})
-	if err != nil {
-		return fmt.Errorf("error configuring S3 client (%s - %s)", key, MyRBAC.GeneratedTime)
-	}
-	uploader := s3manager.NewUploader(sess)
-	_, err = uploader.Upload(&s3manager.UploadInput{
-		Bucket: aws.String(scanDeliveryBucket),
-		Key:    aws.String(key),
-		Body:   bytes.NewReader(jsonRaw),
-	})
-	if err != nil {
-		return fmt.Errorf("error posting scan results to S3 - error: %s (%s - %s)", err, key, MyRBAC.GeneratedTime)
-	}
-	return nil
-}
-
-//UploadRBACTable -
-func (s3RBACReporter *S3RBACReporter) UploadRBACTable(RbacTable *[]rbacutils.RbacTable, customer string, cluster string) error {
-	key := customer + "/" + cluster + "/" + "rbac-table.json"
-	scanDeliveryBucket := s3RBACReporter.S3Bucket
-	if len(scanDeliveryBucket) == 0 {
-		return fmt.Errorf("must configure S3_BUCKET")
-	}
-	jsonRaw, _ := json.Marshal(RbacTable)
-	sess, err := session.NewSession(&aws.Config{})
-	if err != nil {
-		return fmt.Errorf("error configuring S3 client (%s - %s)", key, RbacTable)
-	}
-	uploader := s3manager.NewUploader(sess)
-	_, err = uploader.Upload(&s3manager.UploadInput{
-		Bucket: aws.String(scanDeliveryBucket),
-		Key:    aws.String(key),
-		Body:   bytes.NewReader(jsonRaw),
-	})
-	if err != nil {
-		return fmt.Errorf("error posting scan results to S3 - error: %s (%s - %s)", err, key, RbacTable)
-	}
-	return nil
 }
