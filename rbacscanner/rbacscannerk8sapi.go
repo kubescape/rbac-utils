@@ -30,7 +30,6 @@ func (rbacScannerFromK8sAPI *RbacScannerFromK8sAPI) GetCustomerGUID() string {
 
 // ListResources returns rbac objects and error
 func (rbacScannerFromK8sAPI *RbacScannerFromK8sAPI) ListResources() (*rbacutils.RbacObjects, error) {
-	// clusterName := rbacScannerFromK8sAPI.GetClusterName()
 	rbacObjects := rbacutils.RbacObjects{}
 	clusterRoles, err := rbacScannerFromK8sAPI.K8s.KubernetesClient.RbacV1().ClusterRoles().List(rbacScannerFromK8sAPI.K8s.Context, metav1.ListOptions{})
 	if err != nil {
@@ -52,12 +51,6 @@ func (rbacScannerFromK8sAPI *RbacScannerFromK8sAPI) ListResources() (*rbacutils.
 		return nil, err
 	}
 	rbacObjects.RoleBindings = roleBindings
-	//TODO - DEPRECATE sa2WLIDmap
-	sa2WLIDmap, err := rbacutils.InitSA2WLIDmap(rbacScannerFromK8sAPI.K8s, rbacScannerFromK8sAPI.ClusterName)
-	if err != nil {
-		return nil, err
-	}
-	rbacObjects.SA2WLIDmap = sa2WLIDmap
 	saID2WLIDmap, err := rbacutils.InitSAID2WLIDmap(rbacScannerFromK8sAPI.K8s, rbacScannerFromK8sAPI.ClusterName)
 	if err != nil {
 		return nil, err
