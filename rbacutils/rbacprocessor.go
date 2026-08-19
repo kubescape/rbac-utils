@@ -263,7 +263,7 @@ func InitRbacTable(clustername string, clusterRoles *rbac.ClusterRoleList, roles
 					if clusterRole.Name == roleBinding.RoleRef.Name {
 						for _, rule := range clusterRole.Rules {
 							//create new row in table
-							var RbacTable = RbacTable{Cluster: clustername, Namespace: "All (*)", UserType: subject.Kind,
+							var RbacTable = RbacTable{Cluster: clustername, Namespace: roleBinding.Namespace, UserType: subject.Kind,
 								Username: subject.Name, Role: clusterRole.Name, Verb: rule.Verbs, Resource: rule.Resources}
 							RbacTableList = append(RbacTableList, RbacTable)
 						}
